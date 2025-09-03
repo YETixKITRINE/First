@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Point Plotter</title>
+  <style>
+    body { font-family: sans-serif; text-align: center; margin-top: 40px; }
+    #graph { border: 1px solid #ccc; background: #fafafa; }
+    .input-group { margin-bottom: 10px; }
+  </style>
+</head>
+<body>
+  <h2>Point Plotter (-10 to 10)</h2>
+  <div class="input-group">
+    <label>X: <input type="number" id="xInput" min="-10" max="10" value="0"></label>
+    <label>Y: <input type="number" id="yInput" min="-10" max="10" value="0"></label>
+    <button onclick="plotPoint()">Plot</button>
+  </div>
+  <canvas id="graph" width="400" height="400"></canvas>
+  <script>
+    const canvas = document.getElementById('graph');
+    const ctx = canvas.getContext('2d');
+    let point = { x: 0, y: 0 };
+
+    function drawGraph() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      // Draw grid lines
+      ctx.strokeStyle = '#eee';
+      for (let i = -10; i <= 10; i++) {
+        let px = 200 + i * 20;
+        let py = 200 - i * 20;
+        // Vertical grid lines
+        ctx.beginPath();
+        ctx.moveTo(px, 0); ctx.lineTo(px, 400);
+        ctx.stroke();
+        // Horizontal grid lines
+        ctx.beginPath();
+        ctx.moveTo(0, py); ctx.lineTo(400, py);
+        ctx.stroke();
+      }
+      // Draw axes
+      ctx.strokeStyle = '#888';
+      ctx.beginPath();
+      ctx.moveTo(0, 200); ctx.lineTo(400, 200); // x-axis
+      ctx.moveTo(200, 0); ctx.lineTo(200, 400); // y-axis
+      ctx.stroke();
+      // Draw ticks
+      for (let i = -10; i <= 10; i++) {
+        let px = 200 + i * 20;
+        ctx.beginPath();
+        ctx.moveTo(px, 195); ctx.lineTo(px, 205); // x ticks
+        ctx.moveTo(195, px); ctx.lineTo(205, px); // y ticks
+        ctx.stroke();
+        // Labels
+        if (i !== 0) {
+          ctx.fillStyle = '#444';
+          ctx.font = '12px sans-serif';
+          ctx.fillText(i, px - 7, 220); // x labels
+          ctx.fillText(i, 180, 405 - px); // y labels
+        }
+      }
+      // Draw point
+      drawPoint(point.x, point.y);
+    }
+
+    function drawPoint(x, y) {
+      if (x < -10 || x > 10 || y < -10 || y > 10) return;
+      const px = 200 + x * 20;
+      const py = 200 - y * 20;
+      ctx.beginPath();
+      ctx.arc(px, py, 7, 0, 2 * Math.PI);
+      ctx.fillStyle = 'red';
+      ctx.fill();
+      ctx.strokeStyle = '#b00';
+      ctx.stroke();
+      ctx.fillStyle = '#000';
+      ctx.font = '14px sans-serif';
+      ctx.fillText(`(${x}, ${y})`, px + 10, py - 10);
+    }
+
+    function plotPoint() {
+      const x = parseFloat(document.getElementById('xInput').value);
+      const y = parseFloat(document.getElementById('yInput').value);
+      if (x < -10 || x > 10 || y < -10 || y > 10) {
+        alert('Please enter x and y between -10 and 10.');
+        return;
+      }
+      point = { x, y };
+      drawGraph();
+    }
+
+    drawGraph();
+  </script>
+</body>
+</html>
